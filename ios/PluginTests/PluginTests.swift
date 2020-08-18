@@ -15,22 +15,42 @@ class PluginTests: XCTestCase {
         super.tearDown()
     }
 
-    func testEcho() {
-        // This is an example of a functional test case for a plugin.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
-        let value = "Hello, World!"
+    func testGetStandardEvents() {
         let plugin = BranchDeepLinks()
 
-        let call = CAPPluginCall(callbackId: "test", options: [
-            "value": value
-        ], success: { (result, _) in
-            let resultValue = result!.data["branch_standard_events"]
-            XCTAssertTrue(resultValue != nil)
+        let call = CAPPluginCall(callbackId: "getStandardEvents", success: { (result, _) in
+            let resultValue = result!.data["branch_standard_events"] as? [Any]
+            let containsEvents = resultValue!.contains { element in
+                if (element as? BranchStandardEvent) != nil {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            XCTAssertTrue(containsEvents)
         }, error: { (_) in
             XCTFail("Error shouldn't have been called")
         })
 
         plugin.getStandardEvents(call!)
+    }
+
+    func testGenerateShortUrl() {
+        let plugin = BranchDeepLinks()
+        plugin.setBranchService(branchService: BranchServiceMock())
+        let analytics = ["channel": "facebook"]
+        let properties = ["$desktop_url": "http://www.example.com/desktop"]
+
+        let call = CAPPluginCall(callbackId: "generateShortUrl", options: [
+            "analytics": analytics,
+            "properties": properties
+        ], success: { (result, _) in
+            let resultValue = result!.data["url"] as? String
+            XCTAssertEqual(resultValue, "https://example.app.link/qeFky9V118")
+        }, error: { (_) in
+            XCTFail("Error shouldn't have been called")
+        })
+
+        plugin.generateShortUrl(call!)
     }
 }
