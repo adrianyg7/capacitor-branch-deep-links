@@ -38,8 +38,8 @@ class PluginTests: XCTestCase {
     func testGenerateShortUrl() {
         let plugin = BranchDeepLinks()
         plugin.setBranchService(branchService: BranchServiceMock())
-        let analytics = ["channel": "facebook"]
-        let properties = ["$desktop_url": "http://www.example.com/desktop"]
+        let analytics = NSDictionary()
+        let properties = NSDictionary()
 
         let call = CAPPluginCall(callbackId: "generateShortUrl", options: [
             "analytics": analytics,
@@ -52,5 +52,53 @@ class PluginTests: XCTestCase {
         })
 
         plugin.generateShortUrl(call!)
+    }
+
+    func testDisableTracking() {
+        let plugin = BranchDeepLinks()
+        plugin.setBranchService(branchService: BranchServiceMock())
+        let isEnabled = true
+
+        let call = CAPPluginCall(callbackId: "disableTracking", options: [
+            "isEnabled": isEnabled
+        ], success: { (result, _) in
+            let resultValue = result!.data["is_enabled"] as? Bool
+            XCTAssertEqual(resultValue, true)
+        }, error: { (_) in
+            XCTFail("Error shouldn't have been called")
+        })
+
+        plugin.disableTracking(call!)
+    }
+
+    func testSetIdentity() {
+        let plugin = BranchDeepLinks()
+        plugin.setBranchService(branchService: BranchServiceMock())
+        let newIdentity = "123abc"
+
+        let call = CAPPluginCall(callbackId: "setIdentity", options: [
+            "newIdentity": newIdentity
+        ], success: { (result, _) in
+            let resultValue = result!.data["referringParams"] as? [AnyHashable : Any]
+            XCTAssertEqual(resultValue!["+is_first_session"] as? Bool, false)
+        }, error: { (_) in
+            XCTFail("Error shouldn't have been called")
+        })
+
+        plugin.setIdentity(call!)
+    }
+
+    func testLogout() {
+        let plugin = BranchDeepLinks()
+        plugin.setBranchService(branchService: BranchServiceMock())
+
+        let call = CAPPluginCall(callbackId: "logout", success: { (result, _) in
+            let resultValue = result!.data["logged_out"] as? Bool
+            XCTAssertEqual(resultValue, true)
+        }, error: { (_) in
+            XCTFail("Error shouldn't have been called")
+        })
+
+        plugin.logout(call!)
     }
 }

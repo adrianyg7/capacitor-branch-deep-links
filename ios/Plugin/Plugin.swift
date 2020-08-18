@@ -149,30 +149,27 @@ public class BranchDeepLinks: CAPPlugin {
 
     @objc func disableTracking(_ call: CAPPluginCall) {
         let isEnabled = call.getBool("isEnabled") ?? false
-        Branch.setTrackingDisabled(isEnabled)
-        call.success([
-            "is_enabled": isEnabled
-        ])
+        branchService.disableTracking(isEnabled: isEnabled) { (enabled) in
+            call.success([
+                "is_enabled": enabled
+            ])
+        }
     }
 
     @objc func setIdentity(_ call: CAPPluginCall) {
-        let newIdentity = call.getString("newIdentity")
-        Branch.getInstance().setIdentity(newIdentity) { (referringParams, error) in
-            if (error == nil) {
-                call.success([
-                    "referringParams": referringParams ?? [:]
-                ])
-            } else {
-                call.reject(error?.localizedDescription ?? "Error setting identity")
-            }
+        let newIdentity = call.getString("newIdentity") ?? ""
+        branchService.setIdentity(newIdentity: newIdentity) { (referringParams, error) in
+            call.success([
+                "referringParams": referringParams ?? [:]
+            ])
         }
     }
 
     @objc func logout(_ call: CAPPluginCall) {
-        Branch.getInstance().logout { (loggedOut, error) in
+        branchService.logout() {(loggedOut, error) in
             if (error == nil) {
                 call.success([
-                    "logged_out": loggedOut
+                    "logged_out": loggedOut!
                 ])
             } else {
                 call.reject(error?.localizedDescription ?? "Error logging out")
