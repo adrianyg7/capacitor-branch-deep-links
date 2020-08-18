@@ -1,5 +1,6 @@
 import XCTest
 import Capacitor
+import Branch
 @testable import Plugin
 
 class PluginTests: XCTestCase {
@@ -19,17 +20,17 @@ class PluginTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
 
         let value = "Hello, World!"
-        let plugin = MyPlugin()
+        let plugin = BranchDeepLinks()
 
         let call = CAPPluginCall(callbackId: "test", options: [
             "value": value
         ], success: { (result, _) in
-            let resultValue = result!.data["value"] as? String
-            XCTAssertEqual(value, resultValue)
+            let resultValue = result!.data["branch_standard_events"]
+            XCTAssertTrue(resultValue != nil)
         }, error: { (_) in
             XCTFail("Error shouldn't have been called")
         })
 
-        plugin.echo(call!)
+        plugin.getStandardEvents(call!)
     }
 }
