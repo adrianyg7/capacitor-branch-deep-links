@@ -4,9 +4,12 @@ import Branch
 @testable import Plugin
 
 class PluginTests: XCTestCase {
+    var plugin = BranchDeepLinks()
 
     override func setUp() {
         super.setUp()
+        plugin = BranchDeepLinks()
+        plugin.setBranchService(branchService: BranchServiceMock())
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
@@ -16,8 +19,6 @@ class PluginTests: XCTestCase {
     }
 
     func testGetStandardEvents() {
-        let plugin = BranchDeepLinks()
-
         let call = CAPPluginCall(callbackId: "getStandardEvents", success: { (result, _) in
             let resultValue = result!.data["branch_standard_events"] as? [Any]
             let containsEvents = resultValue!.contains { element in
@@ -36,8 +37,6 @@ class PluginTests: XCTestCase {
     }
 
     func testGenerateShortUrl() {
-        let plugin = BranchDeepLinks()
-        plugin.setBranchService(branchService: BranchServiceMock())
         let analytics = NSDictionary()
         let properties = NSDictionary()
 
@@ -55,8 +54,6 @@ class PluginTests: XCTestCase {
     }
 
     func testDisableTracking() {
-        let plugin = BranchDeepLinks()
-        plugin.setBranchService(branchService: BranchServiceMock())
         let isEnabled = true
 
         let call = CAPPluginCall(callbackId: "disableTracking", options: [
@@ -72,8 +69,6 @@ class PluginTests: XCTestCase {
     }
 
     func testSetIdentity() {
-        let plugin = BranchDeepLinks()
-        plugin.setBranchService(branchService: BranchServiceMock())
         let newIdentity = "123abc"
 
         let call = CAPPluginCall(callbackId: "setIdentity", options: [
@@ -89,9 +84,6 @@ class PluginTests: XCTestCase {
     }
 
     func testLogout() {
-        let plugin = BranchDeepLinks()
-        plugin.setBranchService(branchService: BranchServiceMock())
-
         let call = CAPPluginCall(callbackId: "logout", success: { (result, _) in
             let resultValue = result!.data["logged_out"] as? Bool
             XCTAssertEqual(resultValue, true)

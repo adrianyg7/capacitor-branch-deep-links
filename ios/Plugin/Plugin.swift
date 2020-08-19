@@ -169,7 +169,7 @@ public class BranchDeepLinks: CAPPlugin {
         branchService.logout() {(loggedOut, error) in
             if (error == nil) {
                 call.success([
-                    "logged_out": loggedOut!
+                    "logged_out": loggedOut as Any
                 ])
             } else {
                 call.reject(error?.localizedDescription ?? "Error logging out")
