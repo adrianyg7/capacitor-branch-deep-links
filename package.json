@@ -12,6 +12,7 @@
     "build": "npm run clean && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
+    "examples": "echo 'generate examples'; node ./src/scripts/examples",
     "prepublishOnly": "npm run build"
   },
   "author": "Bound State Software <info@boundstatesoftware.com>",
